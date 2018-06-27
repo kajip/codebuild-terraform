@@ -8,13 +8,15 @@ CodeBuildを使って、Terraformを実行するためのイメージ。
 
     Dockerイメージを構築するための設定ファイル
 
-* [cloudformation](etc/cloudformation)
+* [etc/terraform](etc/terraform)
 
-    このイメージを生成するために必要な環境をAWS上に構築するためのCloudFormationテンプレートファイル置き場
+    このイメージを生成するために必要な環境をAWS上に構築するためのTerraformファイル置き場
 
 ## 事前準備
 
-1. AWS CLI のインストール
+1. Terraformのインストール
+
+2. AWS CLI のインストール
 
     pip(pythonのライブラリ管理ツール)を利用してインストールします。
     
@@ -22,7 +24,7 @@ CodeBuildを使って、Terraformを実行するためのイメージ。
     % pip install awscli
     ```
 
-2. AWSの設定
+3. AWSの設定
 
     ホームディレクトリに .awsディレクトリを作成し、そこに config という名前のファイルを作成します。
     
@@ -42,82 +44,28 @@ CodeBuildを使って、Terraformを実行するためのイメージ。
 
 ## 初期構築
 
-1. CloudFormationを実行
+1. Terraformを実行
 
-    このディレクトリ直下で下記コマンドを実行する
-
-    ```bash
-    % aws cloudformation create-stack --stack-name CodeBuildDinDOracleJDK --template-body file://./cloudformation/template.yml
-    ```
-
-2. CodeCommitのレポジトリにpush
-
-    このプロジェクトをCodeCommitのレポジトリにpushする
+    etc/terraformディレクトリ直下で下記コマンドを実行する
 
     ```bash
-    # 始めてgitでCodeCommitを利用するときは、最初にこのコマンドで必要な設定を追加する
-    % git config --global credential.helper '!aws codecommit credential-helper $@'
-    % git config --global credential.UseHttpPath true
-    # macOS環境でCodeCommitを使うと、key-chain-helperが悪さをするので注意
-    % git remote add origin https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/codebuild-dind-openjdk
-    % git push --all origin
+    % terraform apply
     ```
 
-3. CodeBuildを実行
+2. CodeBuildを実行
 
     CodeBuildを実行し、Dockerイメージを生成する
 
     ```bash
-    % aws codebuild start-build --project-name codebuild-dind-openjdk
+    % aws codebuild start-build --project-name codebuild-terraform
     ```
 
-## AWS環境の更新
-
-1. チェンジセットの構築（dry-runの実行）
-
-    既に構築済みのスタックにテンプレートの変更を反映するには、最初にチェンジセットを作成する。
-
-    ```bash
-    % aws cloudformation create-change-set --stack-name CodeBuildDinDOpenJDK --change-set-name UPDATE --template-body file://./cloudformation/template.yml
-    ```
-
-2. チェンジセットの確認
-
-    チェンジセットが作成されたら、下記コマンドでAWS上の変更内容を確認する。Webコンソールの方が見やすいかも。。。
-
-    ```bash
-    % aws cloudformation describe-change-set --stack-name CodeBuildDinDOpenJDK --change-set-name UPDATE
-    {
-       ....
-        # JSON応答のChangesが変更内容になる
-        "ChangeSetName": "UPDATE",
-        "Changes": [
-            {
-                "Type": "Resource",
-                "ResourceChange": {
-                    "Action": "Add",
-                    "LogicalResourceId": "ApplicationLogS3BucketPolicy",
-                    ...
-                }
-            }
-        ]
-    }
-    ```
-
-3. チェンジセットの反映
-
-    問題がなければ、結果を反映させる。
-    
-    ```bash
-    % aws cloudformation execute-change-set --stack-name CodeBuildDinDOpenJDK --change-set-name UPDATE
-    ```
-
-## AWS環境の削除
+## 環境の削除
 
 1. 破棄
 
-    CloudFormation から設定内容を削除する
+    Terraformを使って環境を削除する
     
     ```bash
-    % aws cloudformation delete-stack --stack-name CodeBuildDinDOpenJDK
+    % terraform destroy
     ```
