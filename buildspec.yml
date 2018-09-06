@@ -3,15 +3,19 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - pip install -U awscli
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
+      - date "+%Y%m%d-%H%M%S" > timestamp
   build:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $ECR_REPOSITORY_URL:$IMAGE_TAG .
+      - docker build -t $ECR_REPOSITORY_URL:`cat timestamp` .
+      - docker tag $ECR_REPOSITORY_URL:`cat timestamp` $ECR_REPOSITORY_URL:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $ECR_REPOSITORY_URL:$IMAGE_TAG
+      - docker push $ECR_REPOSITORY_URL:`cat timestamp`
+      - docker push $ECR_REPOSITORY_URL:latest
