@@ -7,7 +7,7 @@
 FROM alpine:latest
 MAINTAINER Tomomi Kajita <t-kajita@biglobe.co.jp>
 
-ARG TERRAFORM_URL=https://releases.hashicorp.com/terraform/0.11.7/terraform_0.11.7_linux_amd64.zip
+ARG TERRAFORM_URL=https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_linux_amd64.zip
 
 ENV TZ=Asia/Toky
 ENV LANG=ja_JP.UTF-8
