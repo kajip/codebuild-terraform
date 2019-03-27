@@ -15,7 +15,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $ECR_REPOSITORY_URL:${TF_VERSION} --build-arg TF_VERSION=${TF_VERSION} .
+      - docker build -t $ECR_REPOSITORY_URL:${TF_VERSION} --build-arg TF_URL=https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip .
       - docker tag $ECR_REPOSITORY_URL:${TF_VERSION} $ECR_REPOSITORY_URL:latest
   post_build:
     commands:
