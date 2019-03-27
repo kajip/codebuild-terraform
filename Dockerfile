@@ -7,7 +7,7 @@
 FROM alpine:latest
 MAINTAINER Tomomi Kajita <t-kajita@biglobe.co.jp>
 
-ARG TERRAFORM_URL=https://releases.hashicorp.com/terraform/0.11.11/terraform_0.11.11_linux_amd64.zip
+ARG TF_VERSION=0.11.11
 
 ENV TZ=Asia/Toky
 ENV LANG=ja_JP.UTF-8
@@ -18,5 +18,5 @@ RUN apk --update add --no-cache bash tzdata python py-pip ca-certificates && \
     apk del --purge py-pip && \
     rm -rf "/root/.cache"
 
-ADD ${TERRAFORM_URL} /tmp/terraform.zip
+ADD https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip /tmp/terraform.zip
 RUN unzip /tmp/terraform.zip -d /usr/bin

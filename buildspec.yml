@@ -1,5 +1,9 @@
 version: 0.2
 
+env:
+  variables:
+    TF_VERSION: 11.13
+
 phases:
   pre_build:
     commands:
@@ -11,11 +15,11 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...
-      - docker build -t $ECR_REPOSITORY_URL:`cat timestamp` .
-      - docker tag $ECR_REPOSITORY_URL:`cat timestamp` $ECR_REPOSITORY_URL:latest
+      - docker build -t $ECR_REPOSITORY_URL:${TF_VERSION} --build-arg TF_VERSION=${TF_VERSION} .
+      - docker tag $ECR_REPOSITORY_URL:${TF_VERSION} $ECR_REPOSITORY_URL:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $ECR_REPOSITORY_URL:`cat timestamp`
+      - docker push $ECR_REPOSITORY_URL:${TF_VERSION}
       - docker push $ECR_REPOSITORY_URL:latest
